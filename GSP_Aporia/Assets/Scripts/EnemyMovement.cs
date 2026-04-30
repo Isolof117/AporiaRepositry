@@ -1,24 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using UnityEditor.Compilation;
+
 using UnityEngine;
-using UnityEngine.Rendering;
+
+using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
+
+    [Header("Patrol variables")]
+
     [SerializeField] private Transform[] patrolNodes;
 
     int nodePointer = 0;
 
+    [SerializeField] private float walkSpeed = 5.0f;
+
+
+    [Header("Player References")]
+
     [SerializeField] private Transform playerRef;
 
-    [SerializeField] private float patrolSpeed;
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private LayerMask wallLayer;
+
+   
+
+    [Header("Sight Parameters")]
 
     [SerializeField] private float sightDistance;
     [SerializeField] private float fovRange = 80.0f;
 
-    [SerializeField] private LayerMask playerLayer;
+
+    [Header("Other")]
+
+    [SerializeField] private bool isIdle = false;
+
+    private NavMeshAgent agent;
 
 
     enum EnemyState 
@@ -32,53 +50,107 @@ public class EnemyMovement : MonoBehaviour
     private void Start()
     {
         enemyState = EnemyState.Patrol;
+        agent = GetComponent<NavMeshAgent>();
+
+        agent.SetDestination(patrolNodes[nodePointer].position);
+        agent.speed = walkSpeed;
+      
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        if(enemyState == EnemyState.Patrol)
+        if(!isIdle)
         {
-            Patrol();
+            //CHECK FOR STATE CHANGE
+
+            CheckForStateChange();
+
+
+            //Patrol Mode
+
+            if (enemyState == EnemyState.Patrol)
+            {
+                agent.stoppingDistance = 0f;
+                Patrol();
+
+            }
+            //Attack Mode
+
+            if (enemyState == EnemyState.Attack)
+            {
+                agent.stoppingDistance = 2f;
+                //Step closer to target
+
+                agent.SetDestination(playerRef.position);
+
+            }
 
         }
 
-        if (enemyState == EnemyState.Attack)
+
+    }
+
+    void CheckForStateChange()
+    {
+        float distanceToPlayer = Vector3.Distance(transform.position, playerRef.position);
+
+        bool playerVisible = false;
+        bool inFOV = false;
+
+        RaycastHit hit;
+
+        //Check if player is in eye range
+
+        if (distanceToPlayer < sightDistance)
         {
-            float step = patrolSpeed * Time.deltaTime;
+            //Check if player is in FOV (peripherals)
+            inFOV = CheckInFOV();
 
-            //Step closer to target
+            Vector3 towardsPlayer = (playerRef.position - transform.position).normalized;
 
-            transform.position = Vector3.MoveTowards(transform.position, playerRef.position, step);
+            LayerMask visionMask = playerLayer | wallLayer;
 
-            transform.LookAt(playerRef.position);
+            //Check if player is not behind any walls
 
+            if (Physics.Raycast(transform.position, towardsPlayer, out hit, distanceToPlayer, visionMask))
+            {
+                Debug.DrawRay(transform.position, towardsPlayer * distanceToPlayer, Color.green);
+
+                Debug.Log("Hit:" + hit.collider.name);
+
+                if ((playerLayer.value & (1 << hit.collider.gameObject.layer)) != 0)
+                {
+                    playerVisible = true;
+                }
+            }
         }
 
-        //CHECK FOR STATE CHANGE
-        Vector3 towardsPlayerVector = playerRef.position - transform.position;
-
-        Vector3 leftVector = Quaternion.AngleAxis(-fovRange, Vector3.up) * transform.forward;
-
-        Vector3 rightVector = Quaternion.AngleAxis(fovRange, Vector3.up) * transform.forward;
-        
-        bool isInSightRange = IsBetweenVectors(leftVector, rightVector, towardsPlayerVector);
-
-        Collider[] hits = Physics.OverlapSphere(transform.position, sightDistance, playerLayer);
-
-
-        if (isInSightRange && hits.Length > 0)
+        if (inFOV && playerVisible)
         {
             enemyState = EnemyState.Attack;
+            
         }
         else
         {
             enemyState = EnemyState.Patrol;
-            transform.LookAt(new Vector3(patrolNodes[nodePointer].position.x, transform.position.y, patrolNodes[nodePointer].position.z), Vector3.up);
+
+            agent.SetDestination(patrolNodes[nodePointer].position);
+          
         }
+    }
+    bool CheckInFOV()
+    {
+        Vector3 towardsPlayerVector = (playerRef.position - transform.position).normalized;
 
+        Vector3 leftVector = Quaternion.AngleAxis(-fovRange, Vector3.up) * transform.forward;
 
+        Vector3 rightVector = Quaternion.AngleAxis(fovRange, Vector3.up) * transform.forward;
+
+        bool isInSightRange = IsBetweenVectors(leftVector, rightVector, towardsPlayerVector);
+
+        return isInSightRange;
     }
     bool IsBetweenVectors(Vector3 left, Vector3 right, Vector3 t)
     {
@@ -88,23 +160,17 @@ public class EnemyMovement : MonoBehaviour
 
         float dotLR = Vector3.Dot(left, right);
         float dotLT = Vector3.Dot(left, t);
-        float dotRT = Vector3.Dot(left, t);
+        float dotRT = Vector3.Dot(right, t);
 
         return dotLT >= dotLR && dotRT >= dotLR;
 
     }
 
     void Patrol()
-    {
-        Vector3 targetPosition = patrolNodes[nodePointer].position;
-        float step = patrolSpeed * Time.deltaTime;
-
-        //Step closer to target
-
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
+    {   
 
         //Iterate to next node if enemy has made it to target position
-        if (Vector3.Distance(transform.position, targetPosition) <= 1)
+        if (!agent.pathPending && agent.remainingDistance < 0.1f)
         {
             if (nodePointer == patrolNodes.Length - 1)
             {
@@ -115,9 +181,9 @@ public class EnemyMovement : MonoBehaviour
                 nodePointer++;
             }
 
-            transform.LookAt(new Vector3(patrolNodes[nodePointer].position.x, transform.position.y, patrolNodes[nodePointer].position.z),Vector3.up);
-
+            agent.SetDestination(patrolNodes[nodePointer].position);
         }
+        
     }
 
 
@@ -126,11 +192,6 @@ public class EnemyMovement : MonoBehaviour
         //Enemy range sphere
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightDistance);
-
-        //Vector to player line
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, playerRef.position);
-
 
         //Enemy fov gizmos
         Gizmos.color = Color.red;
