@@ -2329,7 +2329,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee2fbcaf23dac3949847a65b54cb7e46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
+  Self: {fileID: 1617674442}
+  Bullet: {fileID: 3459593287664729163, guid: c9a0e60f7eebc714c85304643934b73c, type: 3}
+  maxHealth: 20
   currentHealth: 0
 --- !u!136 &1617674447
 CapsuleCollider:
@@ -2664,6 +2666,7 @@ GameObject:
   - component: {fileID: 1951096105}
   - component: {fileID: 1951096104}
   - component: {fileID: 1951096106}
+  - component: {fileID: 1951096107}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -2757,6 +2760,22 @@ CapsuleCollider:
   m_Height: 3.5
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1951096107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1951096102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee2fbcaf23dac3949847a65b54cb7e46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Self: {fileID: 1951096102}
+  Bullet: {fileID: 3459593287664729163, guid: c9a0e60f7eebc714c85304643934b73c, type: 3}
+  maxHealth: 20
+  currentHealth: 20
 --- !u!1 &1970768262
 GameObject:
   m_ObjectHideFlags: 0

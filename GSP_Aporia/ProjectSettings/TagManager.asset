@@ -7,6 +7,9 @@ TagManager:
   - Weapon
   - Interactable
   - Enemy
+  - LightBullet
+  - MediumBullet
+  - HeavyBullet
   layers:
   - Default
   - TransparentFX
