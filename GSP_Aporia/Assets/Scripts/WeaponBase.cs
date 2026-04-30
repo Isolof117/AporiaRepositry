@@ -137,6 +137,19 @@ public class WeaponBase : MonoBehaviour
 
         bullet.transform.forward = shotDirection;
 
+        if (currentMode == ShootingMode.Single)
+        {
+            bullet.tag = "LightBullet";
+        }
+        if (currentMode == ShootingMode.Auto)
+        {
+            bullet.tag = "HeavyBullet";
+        }
+        if (currentMode == ShootingMode.Burst)
+        {
+            bullet.tag = "MediumBullet";
+        }
+
         bullet.GetComponent<Rigidbody>().AddForce(shotDirection * bulletVelocity, ForceMode.Impulse);
         StartCoroutine(DestroyBullet(bullet, lifeTime));
 
@@ -196,10 +209,9 @@ public class WeaponBase : MonoBehaviour
 
     private IEnumerator DestroyBullet(GameObject bullet, float lifeTime)
     {
+            yield return new WaitForSeconds(lifeTime);
 
-        yield return new WaitForSeconds (lifeTime);
-            
-        Destroy(bullet);
+            Destroy(bullet);
 
     }
 }
