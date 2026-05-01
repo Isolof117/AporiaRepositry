@@ -12,13 +12,32 @@ public class EnemyMovement : MonoBehaviour
     int nodePointer = 0;
 
     [SerializeField] private Transform playerRef;
+<<<<<<< Updated upstream
 
     [SerializeField] private float patrolSpeed;
+=======
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private LayerMask wallLayer;
+
+   
+
+    [Header("Sight Parameters")]
+>>>>>>> Stashed changes
 
     [SerializeField] private float sightDistance;
     [SerializeField] private float fovRange = 80.0f;
 
+<<<<<<< Updated upstream
     [SerializeField] private LayerMask playerLayer;
+=======
+
+    [Header("Other")]
+
+    [SerializeField] private bool isIdle = false;
+    [SerializeField] public WeaponBase Weapon;
+
+    private NavMeshAgent agent;
+>>>>>>> Stashed changes
 
 
     enum EnemyState 
@@ -32,6 +51,17 @@ public class EnemyMovement : MonoBehaviour
     private void Start()
     {
         enemyState = EnemyState.Patrol;
+<<<<<<< Updated upstream
+=======
+        agent = GetComponent<NavMeshAgent>();
+
+        Weapon.isAiControlled = true;
+        Weapon.target = playerRef;
+
+        agent.SetDestination(patrolNodes[nodePointer].position);
+        agent.speed = walkSpeed;
+      
+>>>>>>> Stashed changes
     }
 
 
@@ -40,11 +70,60 @@ public class EnemyMovement : MonoBehaviour
     {
         if(enemyState == EnemyState.Patrol)
         {
+<<<<<<< Updated upstream
             Patrol();
 
         }
 
         if (enemyState == EnemyState.Attack)
+=======
+            //CHECK FOR STATE CHANGE
+
+            CheckForStateChange();
+            Debug.Log("Enemy State: " + enemyState);
+
+            //Patrol Mode
+
+            if (enemyState == EnemyState.Patrol)
+            {
+                agent.stoppingDistance = 0f;
+                Patrol();
+            }
+
+            //Attack Mode
+
+            if (enemyState == EnemyState.Attack)
+            {
+                agent.stoppingDistance = 10f;
+                //Step closer to target
+
+                agent.SetDestination(playerRef.position);
+
+                if (Weapon.bulletsLeft <= 0 && !Weapon.isReloading)
+                {
+                    Weapon.Reload();
+                    return;
+                }
+
+                if (Weapon != null && Weapon.CanFire())
+                    Weapon.Fire();
+            }
+        }
+    }
+
+    void CheckForStateChange()
+    {
+        float distanceToPlayer = Vector3.Distance(transform.position, playerRef.position);
+
+        bool playerVisible = false;
+        bool inFOV = false;
+
+        RaycastHit hit;
+
+        //Check if player is in eye range
+
+        if (distanceToPlayer < sightDistance)
+>>>>>>> Stashed changes
         {
             float step = patrolSpeed * Time.deltaTime;
 
@@ -119,7 +198,6 @@ public class EnemyMovement : MonoBehaviour
 
         }
     }
-
 
     private void OnDrawGizmos()
     {

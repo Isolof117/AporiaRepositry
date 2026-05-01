@@ -16,15 +16,39 @@ public class Health : MonoBehaviour
         Self = gameObject.GetComponent<GameObject>();
         currentHealth = maxHealth;
     }
+<<<<<<< Updated upstream
+=======
+    private void Update()
+    {
+        healthSlider.value = currentHealth;
+        
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            //Test Damage on Enemy
+            TakeDamage(10);
+        }
+    }
+
+    private void LateUpdate()
+    {
+        canvas.transform.LookAt(cameraPosition);
+    }
+>>>>>>> Stashed changes
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
 
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
         if (currentHealth <= 0)
         {
+<<<<<<< Updated upstream
             //Object is dead (call OnDeath method here)
             Destroy(Self);
+=======
+            Death();
+>>>>>>> Stashed changes
         }
     }
 
@@ -33,6 +57,7 @@ public class Health : MonoBehaviour
         currentHealth = maxHealth;
     }
 
+<<<<<<< Updated upstream
     void OnCollisionEnter(Collision collision)
     {
         if (collision != null && CompareTag("LightBullet"))
@@ -49,5 +74,12 @@ public class Health : MonoBehaviour
         {
             TakeDamage(20);
         }
+=======
+    public void Death()
+    {
+        Debug.Log(gameObject.name + " is dead!");
+
+        Destroy(gameObject);
+>>>>>>> Stashed changes
     }
 }
