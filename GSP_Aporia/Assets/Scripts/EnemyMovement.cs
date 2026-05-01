@@ -18,7 +18,6 @@ public class EnemyMovement : MonoBehaviour
     [Header("Player References")]
 
     [SerializeField] private Transform playerRef;
-
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask wallLayer;
 
@@ -33,6 +32,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("Other")]
 
     [SerializeField] private bool isIdle = false;
+    [SerializeField] public WeaponBase Weapon;
 
     private NavMeshAgent agent;
 
@@ -49,6 +49,9 @@ public class EnemyMovement : MonoBehaviour
     {
         enemyState = EnemyState.Patrol;
         agent = GetComponent<NavMeshAgent>();
+
+        Weapon.isAiControlled = true;
+        Weapon.target = playerRef;
 
         agent.SetDestination(patrolNodes[nodePointer].position);
       
@@ -82,6 +85,14 @@ public class EnemyMovement : MonoBehaviour
 
                 agent.SetDestination(playerRef.position);
 
+                if (Weapon.bulletsLeft <= 0 && !Weapon.isReloading)
+                {
+                    Weapon.Reload();
+                    return;
+                }
+
+                if (Weapon != null && Weapon.CanFire())
+                    Weapon.Fire();
             }
 
         }

@@ -1,32 +1,36 @@
-using NUnit.Framework.Constraints;
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class WeaponBase : MonoBehaviour
 {
 
-    // Assets
-    public Camera playerCamera;
+    [Header("Assets")]
+    public Camera Camera;
     public GameObject bulletPrefab;
     public Transform firePoint;
     public QTE_MovingBox MovingBox;
     public SkillCheck KeyInputs;
 
-    // Bullet Attributes
+    [Header("Bullet Attributes")]
     public float bulletVelocity, bulletSpread, fireRate;
     private float lifeTime = 3;
 
-    // Conditions
-    private bool isShooting, readyToShoot, allowReset = true;
-    private int currentBurstBullet; 
+    [Header("AI Settings")]
+    public bool isAiControlled = false;
+    public Transform target;
+
+    [Header("Conditions")]
+    public bool isShooting, readyToShoot, allowReset = true;
+    private int currentBurstBullet;
     public int bulletsPerBurst = 3;
 
-    // Reloading
+    [Header("Reloading")]
     public float reloadTime;
     public int magazineSize, bulletsLeft;
     public bool isReloading;
@@ -41,7 +45,7 @@ public class WeaponBase : MonoBehaviour
         Auto,
         Single,
         Burst
-    }  
+    }
     public ShootingMode currentMode;
 
     // Constructors
@@ -61,11 +65,13 @@ public class WeaponBase : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isAiControlled) return;
+
         if (currentMode == ShootingMode.Auto && bulletsLeft > 0)
         {
             isShooting = Input.GetMouseButton(0);
         }
-        else if (currentMode == ShootingMode.Burst || currentMode == ShootingMode.Single )
+        else if (currentMode == ShootingMode.Burst || currentMode == ShootingMode.Single)
         {
             isShooting = Input.GetMouseButtonDown(0);
         }
@@ -88,14 +94,20 @@ public class WeaponBase : MonoBehaviour
 
         if (bulletsLeft <= 0 && !isReloading && isShooting && !readyToShoot)
         {
+            if (isAiControlled)
+            {
+                Reload();
+                return;
+            }
+
             bulletsLeft = 0;
             isShooting = false;
             QTESelect();
         }
 
-        if (AmmoManager.Instance.ammoCount != null)
+        if (AmmoManager.Instance.ammoCount != null && !isAiControlled)
         {
-            AmmoManager.Instance.ammoCount.text = $"{bulletsLeft/bulletsPerBurst}/{magazineSize/bulletsPerBurst}";
+            AmmoManager.Instance.ammoCount.text = $"{bulletsLeft / bulletsPerBurst}/{magazineSize / bulletsPerBurst}";
         }
     }
 
@@ -107,25 +119,36 @@ public class WeaponBase : MonoBehaviour
         {
             case 0:
                 {
-                        if (!KeyInputs.isVisible && !MovingBox.QTEActive)
+                    if (!KeyInputs.isVisible && !MovingBox.QTEActive)
                         KeyInputs.StartQTE(this);
-                        break;
+                    break;
                 }
             case 1:
                 {
-                        if (!MovingBox.QTEActive && !KeyInputs.isVisible)
+                    if (!MovingBox.QTEActive && !KeyInputs.isVisible)
                         StartCoroutine(MovingBox.DoQTE(this));
-                        break;
+                    break;
                 }
             default:
                 {
-                        break;
+                    break;
                 }
-        };
+        }
+        ;
+    }
+
+    public bool CanFire()
+    {
+        return readyToShoot && !isReloading && bulletsLeft > 0;
     }
 
     public void Fire()
     {
+        if (!readyToShoot || isReloading || bulletsLeft <= 0)
+            return;
+
+        Debug.Log("FIRING");
+
         bulletsLeft--;
 
         readyToShoot = false;
@@ -138,6 +161,9 @@ public class WeaponBase : MonoBehaviour
         bullet.transform.forward = shotDirection;
 
         bullet.GetComponent<Rigidbody>().AddForce(shotDirection * bulletVelocity, ForceMode.Impulse);
+
+        Debug.DrawRay(firePoint.position, shotDirection * 10f, Color.red, 1f);
+
         StartCoroutine(DestroyBullet(bullet, lifeTime));
 
         if (allowReset)
@@ -149,14 +175,12 @@ public class WeaponBase : MonoBehaviour
         if (currentMode == ShootingMode.Burst && currentBurstBullet > 1)
         {
             currentBurstBullet--;
-            Invoke("Fire", fireRate);
+            Invoke("CheckFire", fireRate);
         }
     }
 
     public void Reload()
     {
-
-        // Insert QTE
         isReloading = true;
         Invoke("ReloadCompleted", reloadTime);
     }
@@ -171,18 +195,21 @@ public class WeaponBase : MonoBehaviour
 
     Vector3 CalculateDirectionAndSpread()
     {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
         Vector3 targetPoint;
 
-
-        if (Physics.Raycast(ray, out hit))
+        if (isAiControlled && target != null)
         {
-            targetPoint = hit.point;
+            targetPoint = target.position + Vector3.up * 1.2f; // aim at chest/head
         }
         else
         {
-            targetPoint = ray.GetPoint(100);
+            Ray ray = Camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+                targetPoint = hit.point;
+            else
+                targetPoint = ray.GetPoint(100);
         }
 
         Vector3 direction = targetPoint - firePoint.position;
@@ -196,9 +223,8 @@ public class WeaponBase : MonoBehaviour
 
     private IEnumerator DestroyBullet(GameObject bullet, float lifeTime)
     {
+        yield return new WaitForSeconds(lifeTime);
 
-        yield return new WaitForSeconds (lifeTime);
-            
         Destroy(bullet);
 
     }

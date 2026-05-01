@@ -22,7 +22,7 @@ public class Health : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.H))
         {
             //Test Damage on Enemy
             TakeDamage(10);
@@ -31,25 +31,36 @@ public class Health : MonoBehaviour
 
     private void LateUpdate()
     {
-        canvas.transform.LookAt(cameraPosition);
+       canvas.transform.LookAt(cameraPosition);
     }
-
-
 
     public void TakeDamage(int damage)
     {
+        Debug.Log($"Before Damage: {currentHealth}");
+
         currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+
+        Debug.Log($"After Damage: {currentHealth}");
+
+        healthSlider.value = currentHealth;
 
         if (currentHealth <= 0)
         {
-            //Object is dead (call OnDeath method here)
-
+            Death();
         }
-        healthSlider.value = currentHealth;
     }
 
     public void ResetHealth()
     {
         currentHealth = maxHealth;
+    }
+
+    public void Death()
+    {
+        Debug.Log(gameObject.name + " is dead!");
+
+        Destroy(gameObject);
     }
 }
