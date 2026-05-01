@@ -27,7 +27,7 @@ public class WeaponBase : MonoBehaviour
 
     [Header("Conditions")]
     public bool isShooting, readyToShoot, allowReset = true;
-    private int currentBurstBullet; 
+    private int currentBurstBullet;
     public int bulletsPerBurst = 3;
 
     [Header("Reloading")]
@@ -45,7 +45,7 @@ public class WeaponBase : MonoBehaviour
         Auto,
         Single,
         Burst
-    }  
+    }
     public ShootingMode currentMode;
 
     // Constructors
@@ -71,7 +71,7 @@ public class WeaponBase : MonoBehaviour
         {
             isShooting = Input.GetMouseButton(0);
         }
-        else if (currentMode == ShootingMode.Burst || currentMode == ShootingMode.Single )
+        else if (currentMode == ShootingMode.Burst || currentMode == ShootingMode.Single)
         {
             isShooting = Input.GetMouseButtonDown(0);
         }
@@ -107,7 +107,7 @@ public class WeaponBase : MonoBehaviour
 
         if (AmmoManager.Instance.ammoCount != null && !isAiControlled)
         {
-            AmmoManager.Instance.ammoCount.text = $"{bulletsLeft/bulletsPerBurst}/{magazineSize/bulletsPerBurst}";
+            AmmoManager.Instance.ammoCount.text = $"{bulletsLeft / bulletsPerBurst}/{magazineSize / bulletsPerBurst}";
         }
     }
 
@@ -119,21 +119,22 @@ public class WeaponBase : MonoBehaviour
         {
             case 0:
                 {
-                        if (!KeyInputs.isVisible && !MovingBox.QTEActive)
+                    if (!KeyInputs.isVisible && !MovingBox.QTEActive)
                         KeyInputs.StartQTE(this);
-                        break;
+                    break;
                 }
             case 1:
                 {
-                        if (!MovingBox.QTEActive && !KeyInputs.isVisible)
+                    if (!MovingBox.QTEActive && !KeyInputs.isVisible)
                         StartCoroutine(MovingBox.DoQTE(this));
-                        break;
+                    break;
                 }
             default:
                 {
-                        break;
+                    break;
                 }
-        };
+        }
+        ;
     }
 
     public bool CanFire()
@@ -158,19 +159,6 @@ public class WeaponBase : MonoBehaviour
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
 
         bullet.transform.forward = shotDirection;
-
-        if (currentMode == ShootingMode.Single)
-        {
-            bullet.tag = "LightBullet";
-        }
-        if (currentMode == ShootingMode.Auto)
-        {
-            bullet.tag = "HeavyBullet";
-        }
-        if (currentMode == ShootingMode.Burst)
-        {
-            bullet.tag = "MediumBullet";
-        }
 
         bullet.GetComponent<Rigidbody>().AddForce(shotDirection * bulletVelocity, ForceMode.Impulse);
 
@@ -235,9 +223,9 @@ public class WeaponBase : MonoBehaviour
 
     private IEnumerator DestroyBullet(GameObject bullet, float lifeTime)
     {
-            yield return new WaitForSeconds(lifeTime);
+        yield return new WaitForSeconds(lifeTime);
 
-            Destroy(bullet);
+        Destroy(bullet);
 
     }
 }

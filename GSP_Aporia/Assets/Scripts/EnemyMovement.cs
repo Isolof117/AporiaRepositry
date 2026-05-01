@@ -1,35 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using UnityEditor.Compilation;
+
 using UnityEngine;
-using UnityEngine.Rendering;
+
+using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
+
+    [Header("Patrol variables")]
+
     [SerializeField] private Transform[] patrolNodes;
 
     int nodePointer = 0;
 
-    [SerializeField] private Transform playerRef;
-<<<<<<< Updated upstream
 
-    [SerializeField] private float patrolSpeed;
-=======
+    [Header("Player References")]
+
+    [SerializeField] private Transform playerRef;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask wallLayer;
 
    
 
     [Header("Sight Parameters")]
->>>>>>> Stashed changes
 
     [SerializeField] private float sightDistance;
     [SerializeField] private float fovRange = 80.0f;
 
-<<<<<<< Updated upstream
-    [SerializeField] private LayerMask playerLayer;
-=======
 
     [Header("Other")]
 
@@ -37,7 +35,6 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] public WeaponBase Weapon;
 
     private NavMeshAgent agent;
->>>>>>> Stashed changes
 
 
     enum EnemyState 
@@ -51,50 +48,39 @@ public class EnemyMovement : MonoBehaviour
     private void Start()
     {
         enemyState = EnemyState.Patrol;
-<<<<<<< Updated upstream
-=======
         agent = GetComponent<NavMeshAgent>();
 
         Weapon.isAiControlled = true;
         Weapon.target = playerRef;
 
         agent.SetDestination(patrolNodes[nodePointer].position);
-        agent.speed = walkSpeed;
       
->>>>>>> Stashed changes
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        if(enemyState == EnemyState.Patrol)
+        if(!isIdle)
         {
-<<<<<<< Updated upstream
-            Patrol();
-
-        }
-
-        if (enemyState == EnemyState.Attack)
-=======
             //CHECK FOR STATE CHANGE
 
             CheckForStateChange();
-            Debug.Log("Enemy State: " + enemyState);
+
 
             //Patrol Mode
 
             if (enemyState == EnemyState.Patrol)
             {
-                agent.stoppingDistance = 0f;
+                
                 Patrol();
-            }
 
+            }
             //Attack Mode
 
             if (enemyState == EnemyState.Attack)
             {
-                agent.stoppingDistance = 10f;
+
                 //Step closer to target
 
                 agent.SetDestination(playerRef.position);
@@ -108,11 +94,16 @@ public class EnemyMovement : MonoBehaviour
                 if (Weapon != null && Weapon.CanFire())
                     Weapon.Fire();
             }
+
         }
+
+
     }
 
     void CheckForStateChange()
     {
+        EnemyState previousState = enemyState;
+
         float distanceToPlayer = Vector3.Distance(transform.position, playerRef.position);
 
         bool playerVisible = false;
@@ -123,67 +114,94 @@ public class EnemyMovement : MonoBehaviour
         //Check if player is in eye range
 
         if (distanceToPlayer < sightDistance)
->>>>>>> Stashed changes
         {
-            float step = patrolSpeed * Time.deltaTime;
+            //Check if player is in FOV (peripherals)
+            inFOV = CheckInFOV();
 
-            //Step closer to target
+            Vector3 towardsPlayer = (playerRef.position - transform.position).normalized;
 
-            transform.position = Vector3.MoveTowards(transform.position, playerRef.position, step);
+            LayerMask visionMask = playerLayer | wallLayer;
 
-            transform.LookAt(playerRef.position);
+            //Check if player is not behind any walls
 
+            if (Physics.Raycast(transform.position, towardsPlayer, out hit, distanceToPlayer, visionMask))
+            {
+                Debug.DrawRay(transform.position, towardsPlayer * distanceToPlayer, Color.green);
+
+                Debug.Log("Hit:" + hit.collider.name);
+
+                if ((playerLayer.value & (1 << hit.collider.gameObject.layer)) != 0)
+                {
+                    playerVisible = true;
+                }
+            }
+
+           
         }
-
-        //CHECK FOR STATE CHANGE
-        Vector3 towardsPlayerVector = playerRef.position - transform.position;
-
-        Vector3 leftVector = Quaternion.AngleAxis(-fovRange, Vector3.up) * transform.forward;
-
-        Vector3 rightVector = Quaternion.AngleAxis(fovRange, Vector3.up) * transform.forward;
-        
-        bool isInSightRange = IsBetweenVectors(leftVector, rightVector, towardsPlayerVector);
-
-        Collider[] hits = Physics.OverlapSphere(transform.position, sightDistance, playerLayer);
-
-
-        if (isInSightRange && hits.Length > 0)
+        if (inFOV && playerVisible)
         {
             enemyState = EnemyState.Attack;
+
         }
         else
         {
             enemyState = EnemyState.Patrol;
-            transform.LookAt(new Vector3(patrolNodes[nodePointer].position.x, transform.position.y, patrolNodes[nodePointer].position.z), Vector3.up);
+
+        }
+
+        //Check if state has changed
+
+        if(previousState != enemyState)
+        {
+            OnStateChange();
         }
 
 
     }
-    bool IsBetweenVectors(Vector3 left, Vector3 right, Vector3 t)
+
+    void OnStateChange()
     {
-        left.Normalize();
-        right.Normalize();
-        t.Normalize();
+        //Modify navmesh agent values when switching states
 
-        float dotLR = Vector3.Dot(left, right);
-        float dotLT = Vector3.Dot(left, t);
-        float dotRT = Vector3.Dot(left, t);
+        switch(enemyState)
+        {
+            case EnemyState.Patrol:
 
-        return dotLT >= dotLR && dotRT >= dotLR;
+                agent.SetDestination(patrolNodes[nodePointer].position);
+                agent.stoppingDistance = 0f;
+
+                break;
+
+            case EnemyState.Attack:
+
+                agent.SetDestination(playerRef.position);
+                agent.stoppingDistance = 5.0f;
+
+                break;
+
+            default:
+
+                Debug.LogError("Enemy State '" + enemyState + "' does not exist! ");
+                break;
+        }
 
     }
+    bool CheckInFOV() //Check if the player is in the angle inbetween the enemies view
+    {
+        Vector3 towardsPlayerVector = (playerRef.position - transform.position).normalized;
+
+        float angle = Vector3.Angle(transform.forward, towardsPlayerVector);
+
+        return angle <= (fovRange * 0.5f);
+
+    }
+    
 
     void Patrol()
-    {
-        Vector3 targetPosition = patrolNodes[nodePointer].position;
-        float step = patrolSpeed * Time.deltaTime;
-
-        //Step closer to target
-
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
+    {   
 
         //Iterate to next node if enemy has made it to target position
-        if (Vector3.Distance(transform.position, targetPosition) <= 1)
+        if (!agent.pathPending && agent.remainingDistance < 0.1f)
         {
             if (nodePointer == patrolNodes.Length - 1)
             {
@@ -194,40 +212,39 @@ public class EnemyMovement : MonoBehaviour
                 nodePointer++;
             }
 
-            transform.LookAt(new Vector3(patrolNodes[nodePointer].position.x, transform.position.y, patrolNodes[nodePointer].position.z),Vector3.up);
-
+            agent.SetDestination(patrolNodes[nodePointer].position);
         }
+        
     }
 
-    private void OnDrawGizmos()
+
+    private void OnDrawGizmosSelected()
     {
         //Enemy range sphere
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightDistance);
 
-        //Vector to player line
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, playerRef.position);
-
-
         //Enemy fov gizmos
         Gizmos.color = Color.red;
 
-        Vector3 leftVector = Quaternion.AngleAxis(-fovRange, Vector3.up) * transform.forward;
+        float halfFOV = fovRange * 0.5f;
 
-        Vector3 rightVector = Quaternion.AngleAxis(fovRange, Vector3.up) * transform.forward;
+        Vector3 leftFOV = Quaternion.AngleAxis(-halfFOV, Vector3.up) * transform.forward;
+        Vector3 rightFOV = Quaternion.AngleAxis(halfFOV, Vector3.up) * transform.forward;
 
-        Vector3 forwardPoint = transform.position + (transform.forward * sightDistance);
-        Vector3 leftPoint = transform.position + (leftVector * sightDistance);
-        Vector3 rightPoint = transform.position + (rightVector * sightDistance);
+        Vector3 leftPoint = transform.position + leftFOV * sightDistance;
+        Vector3 rightPoint = transform.position + rightFOV * sightDistance;
 
-        Gizmos.DrawLine(transform.position, forwardPoint);
         Gizmos.DrawLine(transform.position, leftPoint);
         Gizmos.DrawLine(transform.position, rightPoint);
 
+    }
+
+    private void OnDrawGizmos()
+    {
         //Enemy path gizmos
 
-        for(int i = 0; i < patrolNodes.Length; i++)
+        for (int i = 0; i < patrolNodes.Length; i++)
         {
             //Circles for nodes
             Gizmos.color = Color.magenta;
@@ -239,7 +256,7 @@ public class EnemyMovement : MonoBehaviour
 
             if (i != patrolNodes.Length - 1)
             {
-                
+
                 Gizmos.DrawLine(patrolNodes[i].position, patrolNodes[i + 1].position);
             }
             else
@@ -247,7 +264,5 @@ public class EnemyMovement : MonoBehaviour
                 Gizmos.DrawLine(patrolNodes[i].position, patrolNodes[0].position);
             }
         }
-
-
     }
 }

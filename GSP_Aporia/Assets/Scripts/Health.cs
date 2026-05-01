@@ -1,27 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] private GameObject Self;
-    [SerializeField] private GameObject Bullet;
     [SerializeField] private int maxHealth;
     [SerializeField] private int currentHealth;
+
+    [SerializeField] private Slider healthSlider;
+    [SerializeField] private Canvas canvas;
+
+    [SerializeField] private Transform cameraPosition;
 
 
     private void Start()
     {
-        Self = gameObject.GetComponent<GameObject>();
         currentHealth = maxHealth;
+        healthSlider.maxValue = maxHealth;
+        healthSlider.value = currentHealth;
     }
-<<<<<<< Updated upstream
-=======
     private void Update()
     {
-        healthSlider.value = currentHealth;
-        
         if (Input.GetKeyDown(KeyCode.H))
         {
             //Test Damage on Enemy
@@ -31,24 +31,24 @@ public class Health : MonoBehaviour
 
     private void LateUpdate()
     {
-        canvas.transform.LookAt(cameraPosition);
+       canvas.transform.LookAt(cameraPosition);
     }
->>>>>>> Stashed changes
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
+        Debug.Log($"Before Damage: {currentHealth}");
 
+        currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+
+        Debug.Log($"After Damage: {currentHealth}");
+
+        healthSlider.value = currentHealth;
 
         if (currentHealth <= 0)
         {
-<<<<<<< Updated upstream
-            //Object is dead (call OnDeath method here)
-            Destroy(Self);
-=======
             Death();
->>>>>>> Stashed changes
         }
     }
 
@@ -57,29 +57,10 @@ public class Health : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-<<<<<<< Updated upstream
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision != null && CompareTag("LightBullet"))
-        {
-            TakeDamage(5);
-        }
-
-        if (collision != null && CompareTag("MediumBullet"))
-        {
-            TakeDamage(10);
-        }
-
-        if (collision != null && CompareTag("HeavyBullet"))
-        {
-            TakeDamage(20);
-        }
-=======
     public void Death()
     {
         Debug.Log(gameObject.name + " is dead!");
 
         Destroy(gameObject);
->>>>>>> Stashed changes
     }
 }
