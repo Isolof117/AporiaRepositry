@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+<<<<<<< Updated upstream
     public int damage = 100;
+=======
+    // my branch
+    public int damage;
+>>>>>>> Stashed changes
 
     private void OnCollisionEnter(Collision collision)
     {
