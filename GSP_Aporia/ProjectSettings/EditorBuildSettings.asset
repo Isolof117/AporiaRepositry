@@ -17,5 +17,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Jack Branch.unity
     guid: bf82ea995247dd24bb201f2e42867db3
+  - enabled: 1
+    path: Assets/Scenes/CreditsScreen.unity
+    guid: 8f1778cfa68f99f4598d8e0c4486dbe7
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
