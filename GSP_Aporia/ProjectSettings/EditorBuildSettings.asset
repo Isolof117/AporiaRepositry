@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/SplashScreen.unity
+    guid: 5c8ef24201ded5c4e80d057288a2a7ed
+  - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: f39f1d5b5af192c4fa54e0531be35dda
   - enabled: 1
@@ -17,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Jack Branch.unity
     guid: bf82ea995247dd24bb201f2e42867db3
+  - enabled: 1
+    path: Assets/Scenes/SettingsMenu.unity
+    guid: c19825ad7c85ba4489c1771c54ee3590
   - enabled: 1
     path: Assets/Scenes/CreditsScreen.unity
     guid: 8f1778cfa68f99f4598d8e0c4486dbe7
