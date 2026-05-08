@@ -22,6 +22,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
 
+    private bool isAlive = true;
+
     private bool isGrounded;
     private Vector3 velocity;
 
@@ -29,6 +31,9 @@ public class PlayerMovement : MonoBehaviour
 
     private CharacterController controller;
 
+    public Health healthScript;
+    public Canvas deathCanvas;
+    public WeaponBase weaponScript;
    
  
     // Start is called before the first frame update
@@ -37,43 +42,51 @@ public class PlayerMovement : MonoBehaviour
         controller = GetComponent<CharacterController>();
     }
 
+    private void OnEnable()
+    {
+        healthScript.OnDeath += HandlePlayerDeath;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        //Check if Player is touching the ground
-
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
-
-        ResetGravity(); //(STOPS THE PLAYER FROM CONTINUOUSLY BEING DRAGGED DOWN WHEN ON GROUND)
-
-        PlayerMove();  //Move player (x and z)
-
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (isAlive)
         {
-            //Jump
+            //Check if Player is touching the ground
 
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
 
+            ResetGravity(); //(STOPS THE PLAYER FROM CONTINUOUSLY BEING DRAGGED DOWN WHEN ON GROUND)
+
+            PlayerMove();  //Move player (x and z)
+
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                //Jump
+
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+
+            }
+
+            //Apply Gravity to player
+
+            if (velocity.y < 0)
+            {
+                //Fall faster
+                velocity.y += gravity * 1.5f * Time.deltaTime;
+            }
+            else
+            {
+                //Rise Slower
+                velocity.y += gravity * Time.deltaTime;
+            }
+
+
+            //Execute Jump
+
+            controller.Move(velocity * Time.deltaTime);
         }
-
-        //Apply Gravity to player
-
-        if(velocity.y < 0)
-        {
-            //Fall faster
-            velocity.y += gravity * 1.5f * Time.deltaTime;
-        }
-        else
-        {
-            //Rise Slower
-            velocity.y += gravity * Time.deltaTime;
-        }
-           
-
-        //Execute Jump
-
-        controller.Move(velocity * Time.deltaTime);
-
+     
     }
 
 
@@ -104,6 +117,21 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void HandlePlayerDeath()
+    {
+        //Do player Death stuff here - This stuff is temporary
+
+        deathCanvas.gameObject.SetActive(true);
+
+        isAlive = false;
+
+        weaponScript.enabled = false;
+    }
+
+    private void OnDisable()
+    {
+        healthScript.OnDeath -= HandlePlayerDeath;
+    }
 
     private void OnDrawGizmos()
     {

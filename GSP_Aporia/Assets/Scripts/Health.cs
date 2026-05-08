@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,10 @@ public class Health : MonoBehaviour
     [SerializeField] private Canvas canvas;
 
     [SerializeField] private Transform cameraPosition;
+
+    //Events
+
+    public event Action OnDeath;
 
 
     private void Start()
@@ -48,13 +53,16 @@ public class Health : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            Death();
+            Debug.Log("Enemy died");
+            OnDeath?.Invoke();
         }
     }
 
     public void ResetHealth()
     {
         currentHealth = maxHealth;
+
+        healthSlider.value = currentHealth;
     }
 
     public void Death()
