@@ -28,6 +28,9 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float sightDistance;
     [SerializeField] private float fovRange = 80.0f;
 
+    [Header("Death Variables")]
+
+    [SerializeField] private GameObject deathPickUp;
 
     [Header("Other")]
 
@@ -35,6 +38,8 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] public WeaponBase Weapon;
 
     private NavMeshAgent agent;
+
+    public Health healthScript;
 
 
     enum EnemyState 
@@ -45,6 +50,8 @@ public class EnemyMovement : MonoBehaviour
     }
 
     [SerializeField] private EnemyState enemyState;
+
+
     private void Start()
     {
         enemyState = EnemyState.Patrol;
@@ -56,6 +63,15 @@ public class EnemyMovement : MonoBehaviour
         agent.SetDestination(patrolNodes[nodePointer].position);
       
     }
+
+    private void OnEnable()
+    {
+        //Subscribe to events
+        
+        healthScript.OnDeath += HandleEnemyDeath;
+    }
+
+  
 
 
     // Update is called once per frame
@@ -218,6 +234,20 @@ public class EnemyMovement : MonoBehaviour
     }
 
 
+    void HandleEnemyDeath()
+    {
+        Debug.Log("Enemy Death event called");
+        Instantiate(deathPickUp, transform.position, transform.rotation);
+
+        Die();
+    }
+
+
+    void Die()
+    {
+        Destroy(gameObject);
+    }
+
     private void OnDrawGizmosSelected()
     {
         //Enemy range sphere
@@ -264,5 +294,12 @@ public class EnemyMovement : MonoBehaviour
                 Gizmos.DrawLine(patrolNodes[i].position, patrolNodes[0].position);
             }
         }
+    }
+
+    private void OnDisable()
+    {
+        //Unsubscribe to events
+
+        healthScript.OnDeath -= HandleEnemyDeath;
     }
 }
