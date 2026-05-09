@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 using UnityEngine.AI;
@@ -85,9 +85,6 @@ public class EnemyMovement : MonoBehaviour
         healthScript.OnDeath += HandleEnemyDeath;
     }
 
-
-
-
     // Update is called once per frame
     void Update()
     {
@@ -130,6 +127,16 @@ public class EnemyMovement : MonoBehaviour
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Aggro Logic
+        if (collision.gameObject.CompareTag("PlayerBullet"))
+        {
+            Debug.Log("Chasing");
+            enemyState = EnemyState.Attack;
+            Attack();
+        }
+    }
     void CheckForStateChange()
     {
         EnemyState previousState = enemyState;
@@ -288,6 +295,12 @@ public class EnemyMovement : MonoBehaviour
         
     }
 
+    // Basic aggro function
+    void Attack()
+    {
+        agent.SetDestination(playerRef.position);
+        agent.stoppingDistance = 5.0f;
+    }
 
     void HandleEnemyDeath()
     {
@@ -299,12 +312,6 @@ public class EnemyMovement : MonoBehaviour
             data.GetData(Weapon);
 
         Die();
-    }
-
-    IEnumerator EnemyFire()
-    {
-        Weapon.Fire();
-        yield return new WaitForSeconds(Weapon.fireRate);
     }
 
     void Die()
