@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6619772169504298812}
   - component: {fileID: 2631124448542069944}
   - component: {fileID: 5294954390171509010}
+  - component: {fileID: 5695235800664447862}
   m_Layer: 0
   m_Name: Pick Up
   m_TagString: Untagged
@@ -120,3 +121,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c189e263d7f71c4982d4a61ad00a91f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5695235800664447862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5754219478811335100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c3188ef231b36544b1abbd6bf0892bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletVelocity: 0
+  bulletSpread: 0
+  fireRate: 0
+  magazineSize: 0
+  bulletsLeft: 0

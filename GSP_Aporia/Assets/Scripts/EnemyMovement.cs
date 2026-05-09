@@ -21,7 +21,7 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask wallLayer;
 
-   
+
 
     [Header("Sight Parameters")]
 
@@ -36,48 +36,62 @@ public class EnemyMovement : MonoBehaviour
 
     [SerializeField] private bool isIdle = false;
     [SerializeField] public WeaponBase Weapon;
+    //[SerializeField] private WeaponData data;
 
     private NavMeshAgent agent;
 
     public Health healthScript;
 
+    public enum EnemyType
+    {
+        Heavy,
+        Medium,
+        Burst,
+        Light
+    }
 
-    enum EnemyState 
-    { 
+    enum EnemyState
+    {
         Patrol,
         Search,
         Attack
     }
 
     [SerializeField] private EnemyState enemyState;
-
+    [SerializeField] private EnemyType enemyType;
+    private bool enemyIsFiring;
 
     private void Start()
     {
         enemyState = EnemyState.Patrol;
+        DetermineEnemyType();
+
+        Weapon.bulletsLeft = Weapon.magazineSize;
+        Weapon.ResetProperties();
+
         agent = GetComponent<NavMeshAgent>();
 
         Weapon.isAiControlled = true;
         Weapon.target = playerRef;
 
         agent.SetDestination(patrolNodes[nodePointer].position);
-      
+
     }
 
     private void OnEnable()
     {
         //Subscribe to events
-        
+
         healthScript.OnDeath += HandleEnemyDeath;
     }
 
-  
+
 
 
     // Update is called once per frame
     void Update()
     {
-        if(!isIdle)
+        if (!isIdle)
         {
             //CHECK FOR STATE CHANGE
 
@@ -88,7 +102,7 @@ public class EnemyMovement : MonoBehaviour
 
             if (enemyState == EnemyState.Patrol)
             {
-                
+
                 Patrol();
 
             }
@@ -107,7 +121,7 @@ public class EnemyMovement : MonoBehaviour
                     return;
                 }
 
-                if (Weapon != null && Weapon.CanFire())
+                if (Weapon != null)
                     Weapon.Fire();
             }
 
@@ -152,12 +166,11 @@ public class EnemyMovement : MonoBehaviour
                 }
             }
 
-           
+
         }
         if (inFOV && playerVisible)
         {
             enemyState = EnemyState.Attack;
-
         }
         else
         {
@@ -167,7 +180,7 @@ public class EnemyMovement : MonoBehaviour
 
         //Check if state has changed
 
-        if(previousState != enemyState)
+        if (previousState != enemyState)
         {
             OnStateChange();
         }
@@ -179,7 +192,7 @@ public class EnemyMovement : MonoBehaviour
     {
         //Modify navmesh agent values when switching states
 
-        switch(enemyState)
+        switch (enemyState)
         {
             case EnemyState.Patrol:
 
@@ -202,6 +215,48 @@ public class EnemyMovement : MonoBehaviour
         }
 
     }
+
+    void DetermineEnemyType()
+    {
+        switch (enemyType)
+        {
+            case EnemyType.Heavy:
+                {
+                    Weapon.currentMode = WeaponBase.ShootingMode.Auto;
+                    Weapon.magazineSize = 30;
+                    Weapon.fireRate = 0.3f;
+                    break;
+                }
+            case EnemyType.Medium:
+                {
+                    Weapon.currentMode = WeaponBase.ShootingMode.Auto;
+                    Weapon.magazineSize = 15;
+                    Weapon.fireRate = 0.73f;
+                    break;
+                }
+            case EnemyType.Burst:
+                {
+                    Weapon.currentMode = WeaponBase.ShootingMode.Burst;
+                    Weapon.magazineSize = 20;
+                    Weapon.fireRate = 0.5f;
+                    Weapon.bulletsPerBurst = 3;
+                    break;
+                }
+            case EnemyType.Light:
+                {
+                    Weapon.currentMode = WeaponBase.ShootingMode.Single;
+                    Weapon.magazineSize = 10;
+                    Weapon.fireRate = 0.8f;
+                    break;
+                }
+            default:
+                {
+                    Debug.LogError("Enemy Type '" + enemyType + "' does not exist! ");
+                    break;
+                }
+        }
+    }
+
     bool CheckInFOV() //Check if the player is in the angle inbetween the enemies view
     {
         Vector3 towardsPlayerVector = (playerRef.position - transform.position).normalized;
@@ -237,11 +292,20 @@ public class EnemyMovement : MonoBehaviour
     void HandleEnemyDeath()
     {
         Debug.Log("Enemy Death event called");
-        Instantiate(deathPickUp, transform.position, transform.rotation);
+        GameObject deathPickUpInstance = Instantiate(deathPickUp, transform.position, transform.rotation);
+        WeaponData data = deathPickUpInstance.GetComponent<WeaponData>();
+
+        if (data != null)
+            data.GetData(Weapon);
 
         Die();
     }
 
+    IEnumerator EnemyFire()
+    {
+        Weapon.Fire();
+        yield return new WaitForSeconds(Weapon.fireRate);
+    }
 
     void Die()
     {

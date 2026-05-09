@@ -14,11 +14,14 @@ public class WeaponBase : MonoBehaviour
     public Camera Camera;
     public GameObject bulletPrefab;
     public Transform firePoint;
+    public GameObject MovingBoxCanvas;
     public QTE_MovingBox MovingBox;
+    private Coroutine movingBoxQTERoutine;
+    public GameObject SkillCheckCanvas;
     public SkillCheck KeyInputs;
 
     [Header("Bullet Attributes")]
-    public float bulletVelocity, bulletSpread, fireRate;
+    public float bulletVelocity, bulletSpread, fireRate, nextFireTime;
     private float lifeTime = 3;
 
     [Header("AI Settings")]
@@ -26,9 +29,10 @@ public class WeaponBase : MonoBehaviour
     public Transform target;
 
     [Header("Conditions")]
-    public bool isShooting, readyToShoot, allowReset = true;
-    private int currentBurstBullet;
+    public bool isShooting;
+    private bool isBurstFiring;
     public int bulletsPerBurst = 3;
+    private bool QTEShown = false;
 
     [Header("Reloading")]
     public float reloadTime;
@@ -51,15 +55,8 @@ public class WeaponBase : MonoBehaviour
     // Constructors
     private void Awake()
     {
-        readyToShoot = true;
-        currentBurstBullet = bulletsPerBurst;
         bulletsLeft = magazineSize;
-    }
-
-    private void ResetShot()
-    {
-        readyToShoot = true;
-        allowReset = true;
+        nextFireTime = Time.time;
     }
 
     // Update is called once per frame
@@ -67,7 +64,7 @@ public class WeaponBase : MonoBehaviour
     {
         if (isAiControlled) return;
 
-        if (currentMode == ShootingMode.Auto && bulletsLeft > 0)
+        if (currentMode == ShootingMode.Auto)
         {
             isShooting = Input.GetMouseButton(0);
         }
@@ -76,57 +73,106 @@ public class WeaponBase : MonoBehaviour
             isShooting = Input.GetMouseButtonDown(0);
         }
 
-        if (readyToShoot && isShooting)
+        if (isShooting)
         {
-            currentBurstBullet = bulletsPerBurst;
             Fire();
         }
 
         if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !isReloading)
         {
-            QTESelect();
-        }
-
-        if (bulletsLeft < 1)
-        {
-            readyToShoot = false;
-        }
-
-        if (bulletsLeft <= 0 && !isReloading && isShooting && !readyToShoot)
-        {
-            if (isAiControlled)
-            {
-                Reload();
-                return;
-            }
-
             bulletsLeft = 0;
             isShooting = false;
             QTESelect();
         }
 
+        if (bulletsLeft <= 0 && !isReloading && isShooting && !QTEShown)
+        {
+            bulletsLeft = 0;
+            isShooting = false;
+            QTESelect();
+        }
+
+        if (QTEShown && bulletsLeft > 0)
+        {
+            CancelQTE();
+        }
+
         if (AmmoManager.Instance.ammoCount != null && !isAiControlled)
         {
-            AmmoManager.Instance.ammoCount.text = $"{bulletsLeft / bulletsPerBurst}/{magazineSize / bulletsPerBurst}";
+            AmmoManager.Instance.ammoCount.text = $"{bulletsLeft}/{magazineSize}";
         }
     }
 
+    public void ResetProperties()
+    {
+        fireRate = Mathf.Max(0.05f, fireRate);
+        magazineSize = Mathf.Max(1, magazineSize);
+        bulletsPerBurst = Mathf.Max(1, bulletsPerBurst);
+
+        CancelQTE();
+
+        //bulletsLeft = magazineSize;
+        isReloading = false;
+        isBurstFiring = false;
+        nextFireTime = Time.time;
+        isShooting = false;
+    }
+   
     void QTESelect()
     {
-        bulletsLeft = 0;
+        QTEShown = true;
+        Debug.Log("QTE Shown: " + QTEShown);
+
         int Choice = Random.Range(0, 2);
         switch (Choice)
         {
             case 0:
                 {
-                    if (!KeyInputs.isVisible && !MovingBox.QTEActive)
+                    // SkillCheck QTE
+                    if (MovingBoxCanvas != null)
+                        MovingBoxCanvas.SetActive(false);
+
+                    if (MovingBox != null)
+                    {
+                        MovingBox.gameObject.SetActive(false);
+                        MovingBox.QTEActive = false;
+                    }
+
+                    if (SkillCheckCanvas != null)
+                        SkillCheckCanvas.SetActive(true);
+
+                    if (KeyInputs != null)
+                    {
+                        KeyInputs.gameObject.SetActive(true);
+                        KeyInputs.isVisible = false;
                         KeyInputs.StartQTE(this);
+                    }
+
                     break;
                 }
+
             case 1:
                 {
-                    if (!MovingBox.QTEActive && !KeyInputs.isVisible)
-                        StartCoroutine(MovingBox.DoQTE(this));
+                    // MovingBox QTE
+                    if (SkillCheckCanvas != null)
+                        SkillCheckCanvas.SetActive(false);
+
+                    if (KeyInputs != null)
+                    {
+                        KeyInputs.gameObject.SetActive(false);
+                        KeyInputs.isVisible = false;
+                    }
+
+                    if (MovingBoxCanvas != null)
+                        MovingBoxCanvas.SetActive(true);
+
+                    if (MovingBox != null)
+                    {
+                        MovingBox.gameObject.SetActive(true);
+                        MovingBox.QTEActive = true;
+
+                        movingBoxQTERoutine = StartCoroutine(MovingBox.DoQTE(this));
+                    }
                     break;
                 }
             default:
@@ -134,24 +180,78 @@ public class WeaponBase : MonoBehaviour
                     break;
                 }
         }
-        ;
+    }
+
+    public void CancelQTE()
+    {
+        isReloading = false;
+        isShooting = false;
+        QTEShown = false;
+
+        if (MovingBoxCanvas != null)
+        {
+            MovingBoxCanvas.SetActive(false);
+        }
+
+        if (movingBoxQTERoutine != null)
+        {
+            StopCoroutine(movingBoxQTERoutine);
+            movingBoxQTERoutine = null;
+        }
+
+        if (SkillCheckCanvas != null)
+        {
+            SkillCheckCanvas.SetActive(false);
+        }
+        
+        if (KeyInputs != null)
+        {
+            KeyInputs.isVisible = false;
+            KeyInputs.gameObject.SetActive(false);
+        }
+
+        if (MovingBox != null)
+        {
+            MovingBox.QTEActive = false;
+            MovingBox.gameObject.SetActive(false);
+        }
+
+        Debug.Log("QTE Cancelled. QTE Shown: " + QTEShown);
     }
 
     public bool CanFire()
     {
-        return readyToShoot && !isReloading && bulletsLeft > 0;
+        return !isReloading && bulletsLeft > 0 && Time.time >= nextFireTime && !isBurstFiring;
     }
 
     public void Fire()
     {
-        if (!readyToShoot || isReloading || bulletsLeft <= 0)
+        if (!CanFire())
             return;
 
+        switch (currentMode)
+        {
+            case ShootingMode.Auto:
+                FireBullet();
+                nextFireTime = Time.time + fireRate;
+                break;
+
+            case ShootingMode.Single:
+                FireBullet();
+                nextFireTime = Time.time + fireRate;
+                break;
+
+            case ShootingMode.Burst:
+                StartCoroutine(FireBurst());
+                break;
+        }
+    }
+
+    private void FireBullet()
+    {
         Debug.Log("FIRING");
 
         bulletsLeft--;
-
-        readyToShoot = false;
 
         Vector3 shotDirection = CalculateDirectionAndSpread().normalized;
 
@@ -165,18 +265,26 @@ public class WeaponBase : MonoBehaviour
         Debug.DrawRay(firePoint.position, shotDirection * 10f, Color.red, 1f);
 
         StartCoroutine(DestroyBullet(bullet, lifeTime));
+    }
 
-        if (allowReset)
+    private IEnumerator FireBurst()
+    {
+        isBurstFiring = true;
+
+        int bulletsToFire = Mathf.Min(bulletsPerBurst, bulletsLeft);
+
+        for (int i = 0; i < bulletsToFire; i++)
         {
-            Invoke("ResetShot", fireRate);
-            allowReset = false;
+            FireBullet();
+
+            if (i < bulletsToFire - 1)
+            {
+                yield return new WaitForSeconds(fireRate);
+            }
         }
 
-        if (currentMode == ShootingMode.Burst && currentBurstBullet > 1)
-        {
-            currentBurstBullet--;
-            Invoke("CheckFire", fireRate);
-        }
+        nextFireTime = Time.time + fireRate;
+        isBurstFiring = false;
     }
 
     public void Reload()
@@ -190,7 +298,8 @@ public class WeaponBase : MonoBehaviour
     {
         isReloading = false;
         bulletsLeft = magazineSize;
-        readyToShoot = true;
+        nextFireTime = Time.time;
+        isBurstFiring = false;
     }
 
     Vector3 CalculateDirectionAndSpread()
