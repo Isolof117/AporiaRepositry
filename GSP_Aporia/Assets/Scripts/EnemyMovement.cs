@@ -133,7 +133,6 @@ public class EnemyMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("PlayerBullet"))
         {
             Debug.Log("Chasing");
-            enemyState = EnemyState.Attack;
             Attack();
         }
     }

@@ -2039,6 +2039,7 @@ MonoBehaviour:
   Weapon: {fileID: 2117309767}
   healthScript: {fileID: 551301519}
   enemyState: 0
+  enemyType: 0
 --- !u!114 &551301519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3360,16 +3361,17 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3459593287664729163, guid: c9a0e60f7eebc714c85304643934b73c,
     type: 3}
   firePoint: {fileID: 559857828}
+  MovingBoxCanvas: {fileID: 31948037}
   MovingBox: {fileID: 31948039}
+  SkillCheckCanvas: {fileID: 1543315822}
   KeyInputs: {fileID: 438759678}
   bulletVelocity: 30
   bulletSpread: 0
   fireRate: 1
+  nextFireTime: 0
   isAiControlled: 0
   target: {fileID: 0}
   isShooting: 0
-  readyToShoot: 0
-  allowReset: 1
   bulletsPerBurst: 1
   reloadTime: 0
   magazineSize: 7
@@ -5314,16 +5316,17 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3459593287664729163, guid: c9a0e60f7eebc714c85304643934b73c,
     type: 3}
   firePoint: {fileID: 1379610568}
+  MovingBoxCanvas: {fileID: 0}
   MovingBox: {fileID: 31948039}
+  SkillCheckCanvas: {fileID: 0}
   KeyInputs: {fileID: 1854932363}
   bulletVelocity: 30
   bulletSpread: 0
   fireRate: 1
+  nextFireTime: 0
   isAiControlled: 1
   target: {fileID: 2062039278}
   isShooting: 0
-  readyToShoot: 0
-  allowReset: 1
   bulletsPerBurst: 1
   reloadTime: 0
   magazineSize: 7
