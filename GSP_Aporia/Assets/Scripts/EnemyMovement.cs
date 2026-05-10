@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 
 using UnityEngine.AI;
@@ -28,6 +29,20 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float sightDistance;
     [SerializeField] private float fovRange = 80.0f;
 
+    [SerializeField] private float enemyMemoryTime = 2.5f;
+
+    private bool hasSeenPlayer = false;
+    
+
+    [Header("Search Variables")]
+
+    [SerializeField] private float enemySearchTime = 10.0f;
+
+    [SerializeField] private float searchTurnSpeed = 2.0f;
+    [SerializeField] private float searchAngle = 45f;
+
+    private Quaternion initialSearchRot;
+
     [Header("Death Variables")]
 
     [SerializeField] private GameObject deathPickUp;
@@ -38,9 +53,20 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] public WeaponBase Weapon;
     //[SerializeField] private WeaponData data;
 
+
+    [Header("Enemy Alerts")]
+    [SerializeField] private TextMeshProUGUI enemyAlertBox;
+    [SerializeField] private Color searchColor = new Color(245, 212, 66, 255);
+    [SerializeField] private Color attackColor = new Color(252, 48, 109, 255);
+    [SerializeField] private Color patrolColor = new Color(0, 255, 0, 255);
+
     private NavMeshAgent agent;
 
     public Health healthScript;
+
+
+    private Vector3 lastSeenPlayerLocation;
+    float timeSinceLastSeenPlayer;
 
     public enum EnemyType
     {
@@ -76,6 +102,8 @@ public class EnemyMovement : MonoBehaviour
 
         agent.SetDestination(patrolNodes[nodePointer].position);
 
+        timeSinceLastSeenPlayer = enemySearchTime + 1;
+
     }
 
     private void OnEnable()
@@ -103,10 +131,20 @@ public class EnemyMovement : MonoBehaviour
                 Patrol();
 
             }
+
+
+            if(enemyState == EnemyState.Search)
+            {
+                Search();
+            }
+
+            timeSinceLastSeenPlayer += Time.deltaTime;
+
             //Attack Mode
 
             if (enemyState == EnemyState.Attack)
             {
+                
 
                 //Step closer to target
 
@@ -121,6 +159,7 @@ public class EnemyMovement : MonoBehaviour
                 if (Weapon != null)
                     Weapon.Fire();
             }
+           
 
         }
 
@@ -174,14 +213,33 @@ public class EnemyMovement : MonoBehaviour
 
 
         }
-        if (inFOV && playerVisible)
+
+        if(playerVisible && inFOV)
+        {
+            timeSinceLastSeenPlayer = 0;
+
+            hasSeenPlayer = true;
+        }
+
+        if ((inFOV && playerVisible) || timeSinceLastSeenPlayer < enemyMemoryTime)
         {
             enemyState = EnemyState.Attack;
+
+    
+        }
+        else if(hasSeenPlayer && timeSinceLastSeenPlayer < enemySearchTime)
+        {
+            enemyState = EnemyState.Search;
+
+          
         }
         else
         {
             enemyState = EnemyState.Patrol;
 
+           
+
+           
         }
 
         //Check if state has changed
@@ -205,12 +263,33 @@ public class EnemyMovement : MonoBehaviour
                 agent.SetDestination(patrolNodes[nodePointer].position);
                 agent.stoppingDistance = 0f;
 
+                hasSeenPlayer = false;
+
+                enemyAlertBox.color = patrolColor;
+                enemyAlertBox.text = "...";
+
+                break;
+
+            case EnemyState.Search:
+
+                initialSearchRot = transform.rotation;
+
+                lastSeenPlayerLocation = playerRef.position;
+                agent.SetDestination(lastSeenPlayerLocation);
+                agent.stoppingDistance = 1.5f;
+
+                enemyAlertBox.color = searchColor;
+                enemyAlertBox.text = "?";
+
                 break;
 
             case EnemyState.Attack:
 
                 agent.SetDestination(playerRef.position);
                 agent.stoppingDistance = 5.0f;
+
+                enemyAlertBox.color = attackColor;
+                enemyAlertBox.text = "!";
 
                 break;
 
@@ -273,6 +352,21 @@ public class EnemyMovement : MonoBehaviour
 
     }
     
+
+    void Search()
+    {
+        //Enemy has reached last known player location
+
+
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        {
+            //Rotate to imitate searching
+
+            float angle = Mathf.Sin(Time.time * searchTurnSpeed) * searchAngle;
+
+            transform.rotation = initialSearchRot * Quaternion.Euler(0, angle, 0);
+        }
+    }
 
     void Patrol()
     {   
