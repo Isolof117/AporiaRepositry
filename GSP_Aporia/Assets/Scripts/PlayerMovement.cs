@@ -126,6 +126,8 @@ public class PlayerMovement : MonoBehaviour
         isAlive = false;
 
         weaponScript.enabled = false;
+
+        Cursor.lockState = CursorLockMode.None;
     }
 
     private void OnDisable()
