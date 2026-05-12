@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: f39f1d5b5af192c4fa54e0531be35dda
   - enabled: 1
+    path: Assets/Scenes/MapBlockout.unity
+    guid: abdbd2e1a2a1948428604ae51bd92c87
+  - enabled: 1
     path: Assets/Scenes/JJ Branch.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1

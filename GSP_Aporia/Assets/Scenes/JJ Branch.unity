@@ -2275,10 +2275,18 @@ MonoBehaviour:
     m_Bits: 512
   sightDistance: 20
   fovRange: 70
+  enemyMemoryTime: 2.5
+  enemySearchTime: 10
+  searchTurnSpeed: 2
+  searchAngle: 45
   deathPickUp: {fileID: 5754219478811335100, guid: cc25759ab8978b94cbfaa41f31a74d0d,
     type: 3}
   isIdle: 0
   Weapon: {fileID: 2117309767}
+  enemyAlertBox: {fileID: 0}
+  searchColor: {r: 245, g: 212, b: 66, a: 255}
+  attackColor: {r: 252, g: 48, b: 109, a: 255}
+  patrolColor: {r: 0, g: 255, b: 0, a: 255}
   healthScript: {fileID: 551301519}
   enemyState: 0
   enemyType: 0
@@ -5715,7 +5723,7 @@ Transform:
   m_GameObject: {fileID: 2062039276}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 2.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
