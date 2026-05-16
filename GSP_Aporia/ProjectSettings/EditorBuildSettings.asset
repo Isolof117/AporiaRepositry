@@ -12,14 +12,11 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: f39f1d5b5af192c4fa54e0531be35dda
   - enabled: 1
-    path: Assets/Scenes/JJ Branch.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/StoryMode.unity
+    guid: 86b9888beb5f67e4588b4d0065e4dedd
   - enabled: 1
-    path: Assets/Scenes/DemoScene.unity
-    guid: 8b3f19fef33aebd4986a29aa1026d184
-  - enabled: 1
-    path: Assets/Scenes/Jack Branch.unity
-    guid: bf82ea995247dd24bb201f2e42867db3
+    path: Assets/Scenes/WavesMode.unity
+    guid: ab6982b07c44f0743abbb4b54bc760a3
   - enabled: 1
     path: Assets/Scenes/SettingsMenu.unity
     guid: c19825ad7c85ba4489c1771c54ee3590
