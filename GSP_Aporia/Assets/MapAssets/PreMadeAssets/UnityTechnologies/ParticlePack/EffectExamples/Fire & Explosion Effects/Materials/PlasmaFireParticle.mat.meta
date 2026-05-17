@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: a76d81d913cf8f44280496e98655e6fd
+timeCreated: 1473155171
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 73777
+  packageName: Legacy Particle Pack
+  packageVersion: 3.0
+  assetPath: Assets/MapAssets/UnityTechnologies/ParticlePack/EffectExamples/Fire
+    & Explosion Effects/Materials/PlasmaFireParticle.mat
+  uploadId: 680137

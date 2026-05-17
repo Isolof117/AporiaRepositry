@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 5eda44a9d485f724f93e8a5b58939605
+timeCreated: 1473942560
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 73777
+  packageName: Legacy Particle Pack
+  packageVersion: 3.0
+  assetPath: Assets/MapAssets/UnityTechnologies/ParticlePack/EffectExamples/Weapon
+    Effects/Textures/BloodMist.mat
+  uploadId: 680137

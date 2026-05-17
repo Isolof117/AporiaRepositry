@@ -10147,6 +10147,119 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1082585358
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3069083159873015951, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: playerRef
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4054805679018747079, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: ammoCount
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4334435823577251800, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -437.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 36.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -18.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5568269423759528553, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5964149440693769660, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_Name
+      value: Enemy Holder (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7909154343730000033, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7909154343730000033, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8239532446459372662, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: cameraPosition
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8553603215463983491, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8553603215463983491, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: MovingBox
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8553603215463983491, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: MovingBoxCanvas
+      value: 
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fc8d9f3e3dc12164d975e80ae435b5c5, type: 3}
 --- !u!1 &1119537654
 GameObject:
   m_ObjectHideFlags: 0
@@ -21116,3 +21229,4 @@ SceneRoots:
   - {fileID: 332000475}
   - {fileID: 1825589152}
   - {fileID: 870941081}
+  - {fileID: 1082585358}
