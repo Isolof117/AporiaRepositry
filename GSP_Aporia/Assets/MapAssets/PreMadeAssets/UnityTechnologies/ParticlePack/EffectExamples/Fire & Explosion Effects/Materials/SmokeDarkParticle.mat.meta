@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 14fbb071014eeec42a33fdd358ca03a5
+timeCreated: 1471944184
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 73777
+  packageName: Legacy Particle Pack
+  packageVersion: 3.0
+  assetPath: Assets/MapAssets/UnityTechnologies/ParticlePack/EffectExamples/Fire
+    & Explosion Effects/Materials/SmokeDarkParticle.mat
+  uploadId: 680137
