@@ -576,6 +576,72 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &4997385726895798647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1978752494134188306}
+  - component: {fileID: 4628249969847087394}
+  - component: {fileID: 5491291422179503401}
+  m_Layer: 8
+  m_Name: AggroTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1978752494134188306
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4997385726895798647}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4915720980524584134}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &4628249969847087394
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4997385726895798647}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 3
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5491291422179503401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4997385726895798647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb7f589d67615e479ca9c5492c55a02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5218063490757303028
 GameObject:
   m_ObjectHideFlags: 0
@@ -893,7 +959,6 @@ GameObject:
   - component: {fileID: 2298958935934252906}
   - component: {fileID: 4483765712202863690}
   - component: {fileID: 6953125191397352583}
-  - component: {fileID: 5372102109358262456}
   - component: {fileID: 8553603215463983491}
   m_Layer: 8
   m_Name: Gun
@@ -911,7 +976,7 @@ Transform:
   m_GameObject: {fileID: 8232759937591509910}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.242, y: 0.723, z: 0.69}
+  m_LocalPosition: {x: -0.013, y: 1.301, z: 0.85}
   m_LocalScale: {x: 0.17492, y: 0.17492, z: 1.5095098}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -972,27 +1037,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5372102109358262456
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8232759937591509910}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8553603215463983491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1006,7 +1050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 0}
-  bulletPrefab: {fileID: 3459593287664729163, guid: c9a0e60f7eebc714c85304643934b73c,
+  bulletPrefab: {fileID: 2157706488818188934, guid: a10f1561d1b83d84686e44d747f28d68,
     type: 3}
   firePoint: {fileID: 5684510605121407657}
   MovingBoxCanvas: {fileID: 0}
@@ -1603,6 +1647,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2298958935934252906}
+    - targetCorrespondingSourceObject: {fileID: 203571165200434538, guid: 266c26c5b8f5f51468601907054a4de1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1978752494134188306}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 691560146198372304, guid: 266c26c5b8f5f51468601907054a4de1,
         type: 3}
@@ -1662,6 +1710,7 @@ MonoBehaviour:
   sightDistance: 25
   fovRange: 80
   enemyMemoryTime: 2.5
+  attackStoppingDistance: 8
   enemySearchTime: 10
   searchTurnSpeed: 2
   searchAngle: 45

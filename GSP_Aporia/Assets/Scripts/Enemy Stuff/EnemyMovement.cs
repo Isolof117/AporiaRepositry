@@ -32,7 +32,11 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float enemyMemoryTime = 2.5f;
 
     private bool hasSeenPlayer = false;
-    
+
+
+    [Header("Attack Variables")]
+
+    [SerializeField] private float attackStoppingDistance = 8.0f;
 
     [Header("Search Variables")]
 
@@ -56,9 +60,9 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Enemy Alerts")]
     [SerializeField] private TextMeshProUGUI enemyAlertBox;
-    [SerializeField] private Color searchColor = new Color(245, 212, 66, 255);
-    [SerializeField] private Color attackColor = new Color(252, 48, 109, 255);
-    [SerializeField] private Color patrolColor = new Color(0, 255, 0, 255);
+    [SerializeField] private Color searchColor = new Color32(245, 212, 66, 255);
+    [SerializeField] private Color attackColor = new Color32(252, 48, 109, 255);
+    [SerializeField] private Color patrolColor = new Color32(0, 255, 0, 255);
 
     private NavMeshAgent agent;
 
@@ -76,7 +80,7 @@ public class EnemyMovement : MonoBehaviour
         Light
     }
 
-    enum EnemyState
+    public enum EnemyState
     {
         Patrol,
         Search,
@@ -132,6 +136,7 @@ public class EnemyMovement : MonoBehaviour
 
             }
 
+            //Search Mode
 
             if(enemyState == EnemyState.Search)
             {
@@ -144,20 +149,8 @@ public class EnemyMovement : MonoBehaviour
 
             if (enemyState == EnemyState.Attack)
             {
-                
-
-                //Step closer to target
-
-                agent.SetDestination(playerRef.position);
-
-                if (Weapon.bulletsLeft <= 0 && !Weapon.isReloading)
-                {
-                    Weapon.Reload();
-                    return;
-                }
-
-                if (Weapon != null)
-                    Weapon.Fire();
+                Attack();
+              
             }
            
 
@@ -166,15 +159,7 @@ public class EnemyMovement : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        // Aggro Logic
-        if (collision.gameObject.CompareTag("PlayerBullet"))
-        {
-            Debug.Log("Chasing");
-            Attack();
-        }
-    }
+
     void CheckForStateChange()
     {
         EnemyState previousState = enemyState;
@@ -218,7 +203,6 @@ public class EnemyMovement : MonoBehaviour
         {
             timeSinceLastSeenPlayer = 0;
 
-            hasSeenPlayer = true;
         }
 
         if ((inFOV && playerVisible) || timeSinceLastSeenPlayer < enemyMemoryTime)
@@ -286,7 +270,10 @@ public class EnemyMovement : MonoBehaviour
             case EnemyState.Attack:
 
                 agent.SetDestination(playerRef.position);
-                agent.stoppingDistance = 5.0f;
+                agent.stoppingDistance = attackStoppingDistance;
+
+                hasSeenPlayer = true;
+                timeSinceLastSeenPlayer = 0;
 
                 enemyAlertBox.color = attackColor;
                 enemyAlertBox.text = "!";
@@ -299,6 +286,13 @@ public class EnemyMovement : MonoBehaviour
                 break;
         }
 
+    }
+
+    public void SetState(EnemyState newState)
+    {
+        enemyState = newState;
+
+        OnStateChange();
     }
 
     void DetermineEnemyType()
@@ -388,11 +382,21 @@ public class EnemyMovement : MonoBehaviour
         
     }
 
-    // Basic aggro function
+    //Basic aggro function
     void Attack()
     {
+        //Step closer to target
+
         agent.SetDestination(playerRef.position);
-        agent.stoppingDistance = 5.0f;
+
+        if (Weapon.bulletsLeft <= 0 && !Weapon.isReloading)
+        {
+            Weapon.Reload();
+            return;
+        }
+
+        if (Weapon != null)
+            Weapon.Fire();
     }
 
     void HandleEnemyDeath()

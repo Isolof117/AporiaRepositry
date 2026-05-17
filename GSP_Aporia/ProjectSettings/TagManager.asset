@@ -8,6 +8,9 @@ TagManager:
   - Interactable
   - Enemy
   - PlayerBullet
+  - FxTemporaire
+  - Stone
+  - EnemyBullet
   layers:
   - Default
   - TransparentFX
