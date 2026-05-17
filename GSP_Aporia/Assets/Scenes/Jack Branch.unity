@@ -448,7 +448,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &248372966
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2622,16 +2622,6 @@ PrefabInstance:
       propertyPath: ammoCount
       value: 
       objectReference: {fileID: 2134024618}
-    - target: {fileID: 2772563449815120594, guid: 759bd3c57d48313439d3b261f5bc3521,
-        type: 3}
-      propertyPath: maxHealth
-      value: 120
-      objectReference: {fileID: 0}
-    - target: {fileID: 2772563449815120594, guid: 759bd3c57d48313439d3b261f5bc3521,
-        type: 3}
-      propertyPath: currentHealth
-      value: 120
-      objectReference: {fileID: 0}
     - target: {fileID: 2922589086615138151, guid: 759bd3c57d48313439d3b261f5bc3521,
         type: 3}
       propertyPath: m_Name
@@ -2728,6 +2718,11 @@ PrefabInstance:
       propertyPath: playerRef
       value: 
       objectReference: {fileID: 712637604}
+    - target: {fileID: 3069083159873015951, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
+        type: 3}
+      propertyPath: attackStoppingDistance
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 4054805679018747079, guid: fc8d9f3e3dc12164d975e80ae435b5c5,
         type: 3}
       propertyPath: ammoCount
