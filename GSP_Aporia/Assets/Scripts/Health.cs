@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Health : MonoBehaviour
 {
     [SerializeField] private int maxHealth;
-    [SerializeField] private int currentHealth;
+    [SerializeField] public int currentHealth;
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private Canvas canvas;

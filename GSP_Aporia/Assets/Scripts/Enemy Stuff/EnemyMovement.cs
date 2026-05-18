@@ -188,7 +188,7 @@ public class EnemyMovement : MonoBehaviour
             {
                 Debug.DrawRay(transform.position, towardsPlayer * distanceToPlayer, Color.green);
 
-                Debug.Log("Hit:" + hit.collider.name);
+                //Debug.Log("Hit:" + hit.collider.name);
 
                 if ((playerLayer.value & (1 << hit.collider.gameObject.layer)) != 0)
                 {

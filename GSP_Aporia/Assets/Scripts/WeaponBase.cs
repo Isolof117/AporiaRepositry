@@ -308,7 +308,7 @@ public class WeaponBase : MonoBehaviour
 
         if (isAiControlled && target != null)
         {
-            targetPoint = target.position + Vector3.up * 1.2f; // aim at chest/head
+            targetPoint = target.position + Vector3.up * 0.3f; // aim at chest/head
         }
         else
         {
